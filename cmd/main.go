@@ -1,3 +1,5 @@
+// Copyright (c) 2022, chuckldev.  All rights reserved
+
 package main
 
 import (
