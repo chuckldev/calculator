@@ -21,6 +21,7 @@ var opm map[string]func(float64, float64) float64
 var rxOpenParens = regexp.MustCompile(`\(`)
 var rxCloseParens = regexp.MustCompile(`\)`)
 var rxNum = regexp.MustCompile(`(([0-9]*[.])?[0-9]+)|[0-9]`)
+var rxPerCom = regexp.MustCompile(`[,.]`)
 var rxOper = regexp.MustCompile(`[\*\/\+\-\^]`)
 
 func init() {
@@ -50,6 +51,10 @@ func IsNum(s string) bool {
 	return rxNum.MatchString(s)
 }
 
+func IsPeriodComma(s string) bool {
+	return rxPerCom.MatchString(s)
+}
+
 func IsOperator(s string) bool {
 	return rxOper.MatchString(s)
 }
@@ -58,12 +63,16 @@ func SplitString(expr string) []string {
 	s := strings.Split(strings.ReplaceAll(expr, " ", ""), "")
 	var res []string
 	for i := 0; i < len(s); i++ {
-		if !IsNum(s[i]) {
+		if !IsNum(s[i]) && !IsPeriodComma(s[i]) {
 			res = append(res, s[i])
 			continue
 		} else {
 			c := ""
-			for i < len(s) && IsNum(s[i]) {
+			for (i < len(s) && IsNum(s[i])) || (i < len(s) && IsPeriodComma(s[i])) {
+				if s[i] == "," {
+					i++
+					continue
+				}
 				c += s[i]
 				i++
 			}
